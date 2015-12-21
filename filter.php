@@ -55,6 +55,7 @@ class filter_elevator extends moodle_text_filter {
 
         @$dom->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
         $xpath = new DOMXPath($dom);
+        $matchCount = 0;
         foreach ($xpath->query('//img') as $node) {
             $href = $node->getAttribute('src');
 
@@ -101,6 +102,13 @@ class filter_elevator extends moodle_text_filter {
                     // Keep old moodle embeds @ the default size
                     $width = $this->_default_thumb_width;
                     $height = $this->_default_thumb_height;
+                }
+
+                if($matchCount == 1) {
+                    $embed_url .= "#firstFrame";
+                }
+                else {
+                    $embed_url .= "#secondFrame";
                 }
 
                 $html = '<iframe src="' .$embed_url .'" ' .
