@@ -95,7 +95,7 @@ class filter_elevator extends moodle_text_filter {
                 $this->elevatorAPI = new elevatorAPI($elevatorURL, $apiKey, $apiSecret);
 
                 // this will return a URL that's designed to be run in an iFrame.
-                $embed_url = $this->elevatorAPI->getEmbedContent($fileObjectId, $instance, $excerpt);
+                $embed_url = $this->stripHTTP($this->elevatorAPI->getEmbedContent($fileObjectId, $instance, $excerpt));
 
                 if (empty($width) || empty($height)
                     || ($width == 195 && $height == 110)) {
@@ -127,6 +127,14 @@ class filter_elevator extends moodle_text_filter {
             }
         }
         return $dom->saveHTML();
+    }
+
+    function stripHTTP($source) {
+        $parsedURL = parse_url($source);
+        if(!array_key_exists("scheme", $parsedURL)) {
+            return $source;
+        }
+        return str_ireplace($parsedURL["scheme"] . ":", "", $source);
     }
 
 
