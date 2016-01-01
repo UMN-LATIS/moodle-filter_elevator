@@ -104,12 +104,14 @@ class filter_elevator extends moodle_text_filter {
                     $height = $this->_default_thumb_height;
                 }
 
-                if($matchCount == 1) {
+                if($matchCount == 0) {
                     $embed_url .= "#firstFrame";
                 }
                 else {
                     $embed_url .= "#secondFrame";
                 }
+
+                $matchCount++;
 
                 $html = '<iframe src="' .$embed_url .'" ' .
                     'width="'. $width . '" ' .

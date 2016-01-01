@@ -24,7 +24,7 @@
 defined('MOODLE_INTERNAL') || die('Invalid access');
 
 $plugin->component          = 'filter_elevator';
-$plugin->version            = 2015032613;
+$plugin->version            = 2015032614;
 $plugin->requires           = 2012062501;
 $plugin->release            = '1.0.2';
 $plugin->maturity           = MATURITY_STABLE;
