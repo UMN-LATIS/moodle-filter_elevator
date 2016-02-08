@@ -57,7 +57,19 @@ class filter_elevator extends moodle_text_filter {
 
         $dom = new DomDocument();
 
-        @$dom->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+        // If we're on PHP 5.4.0 or later, we can just ask not to have the doctype and html/body tags included
+        // otherwise we need to strip them ourselves
+        if(version_compare(phpversion(), '5.4.0') >= 0) {
+            @$dom->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        }
+        else {
+            @$dom->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+            # remove doctype
+            $dom->removeChild($dom->doctype);
+            # remove <html><body></body></html>
+            $dom->replaceChild($dom->firstChild->firstChild->firstChild, $dom->firstChild);
+        }
+
         $xpath = new DOMXPath($dom);
         $matchCount = 0;
         foreach ($xpath->query('//img') as $node) {
@@ -130,7 +142,7 @@ class filter_elevator extends moodle_text_filter {
 
             }
         }
-        return html_entity_decode($dom->saveHTML());
+        return mb_convert_encoding($dom->saveHTML(), "UTF-8", "HTML-ENTITIES");
     }
 
     function stripHTTP($source) {
