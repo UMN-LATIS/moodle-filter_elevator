@@ -51,6 +51,10 @@ class filter_elevator extends moodle_text_filter {
             return $html;
         }
 
+        if(!(boolean)preg_match($this->targetString, $html)) {
+            return $html;
+        }
+
         $dom = new DomDocument();
 
         @$dom->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
@@ -126,7 +130,7 @@ class filter_elevator extends moodle_text_filter {
 
             }
         }
-        return $dom->saveHTML();
+        return html_entity_decode($dom->saveHTML());
     }
 
     function stripHTTP($source) {
