@@ -59,7 +59,7 @@ class filter_elevator extends moodle_text_filter {
 
         // If we're on PHP 5.4.0 or later, we can just ask not to have the doctype and html/body tags included
         // otherwise we need to strip them ourselves
-        if(version_compare(phpversion(), '5.4.0') >= 0) {
+        if(version_compare(phpversion(), '5.4.0') >= 0 && defined(LIBXML_HTML_NOIMPLIED) && defined(LIBXML_HTML_NODEFDTD)) {
             @$dom->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         }
         else {
