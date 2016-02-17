@@ -55,12 +55,14 @@ class filter_elevator extends moodle_text_filter {
             return $html;
         }
 
-        preg_match('/<img[^>]+\>/i', $html, $imageTags);
-
         $matchCount = 0;
-        foreach ($imageTags as $image) {
-            if (!empty($image) && (boolean)preg_match($this->targetString, $image)) {
+        preg_match_all('/<img[^>]+\>/i', $html, $imageTags);
+        if(count($imageTags) == 0) {
+            continue;
+        }
 
+        foreach ($imageTags[0] as $image) {
+            if (!empty($image) && (boolean)preg_match($this->targetString, $image)) {
                 $imageDoc = new DOMDocument();
                 $imageDoc->loadHTML($image);
                 $imageNodes = $imageDoc->getElementsByTagName("img");
