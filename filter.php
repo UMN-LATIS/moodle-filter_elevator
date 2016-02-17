@@ -55,47 +55,17 @@ class filter_elevator extends moodle_text_filter {
             return $html;
         }
 
-        $dom = new DomDocument();
-        $outputDom = new DomDocument();
-        // If we're on PHP 5.4.0 or later, we can just ask not to have the doctype and html/body tags included
-        // otherwise we need to strip them ourselves
-        if(version_compare(phpversion(), '5.4.0') >= 0 && defined('LIBXML_HTML_NOIMPLIED') && defined('LIBXML_HTML_NODEFDTD')) {
-            $dom->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-            $outputDom = $dom;
-        }
-        else {
-            $dom->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
-            # remove doctype
-            $dom->removeChild($dom->doctype);
-            # remove <html><body></body></html>
-            if($dom->firstChild->nodeName == "html") {
-                if($dom->firstChild->firstChild->nodeName == "body") {
-                    foreach($dom->firstChild->firstChild->childNodes as $childNode) {
-                        $newNode = $outputDom->importNode($childNode, true);
-                        $outputDom->appendChild($newNode);
+        preg_match('/<img[^>]+\>/i', $html, $imageTags);
 
-                    }
-                }
-                else {
-                    foreach($dom->firstChild->childNodes as $childNode) {
-                        $newNode = $outputDom->importNode($childNode,true );
-                        $outputDom->appendChild($newNode);
-                    }
-                }
-            }
-            else {
-            }
-        }
+        foreach ($imageTags as $image) {
+            if (!empty($image) && (boolean)preg_match($this->targetString, $image)) {
 
-        $xpath = new DOMXPath($outputDom);
-        $matchCount = 0;
-        foreach ($xpath->query('//img') as $node) {
-            $href = $node->getAttribute('src');
-
-            if (!empty($href) && (boolean)preg_match($this->targetString, $href)) {
-                $newnode  = $outputDom->createDocumentFragment();
-                $width = $node->getAttribute('width');
-                $height = $node->getAttribute('height');
+                $imageDoc = new DOMDocument();
+                $imageDoc->loadHTML($image);
+                $imageNode = $imageDoc->getElementsByTagName("img")[0];
+                $href = $imageNode->getAttribute("src");
+                $width = $imageNode->getAttribute('width');
+                $height = $imageNode->getAttribute('height');
 
                 $queryString = explode("?", $href);
                 if (count($queryString)== 0) {
@@ -145,21 +115,19 @@ class filter_elevator extends moodle_text_filter {
                 }
 
                 $matchCount++;
-
-                $html = '<iframe src="' .$embed_url .'" ' .
+                $iframe = '<iframe src="' .$embed_url .'" ' .
                     'width="'. $width . '" ' .
                     'height="' . $height . '" ' .
                     'webkitallowfullscreen="webkitallowfullscreen" ' .
                     'allowfullscreen="allowfullscreen" ' .
                     'frameborder="0"> ' .
                     '</iframe>';
-                $newnode->appendXML($html);
-                $node->parentNode->replaceChild($newnode, $node);
 
-
+                $html = str_replace($image, $iframe, $html);
             }
         }
-        return mb_convert_encoding($outputDom->saveHTML(), "UTF-8", "HTML-ENTITIES");
+
+        return $html;
     }
 
     function stripHTTP($source) {
