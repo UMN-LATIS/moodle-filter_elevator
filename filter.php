@@ -62,7 +62,12 @@ class filter_elevator extends moodle_text_filter {
 
                 $imageDoc = new DOMDocument();
                 $imageDoc->loadHTML($image);
-                $imageNode = $imageDoc->getElementsByTagName("img")[0];
+                $imageNodes = $imageDoc->getElementsByTagName("img");
+                // if we don't have an element for some reason, continue to the next image.
+                if(!$imageNodes || !$imageNodes->item(0)) {
+                    continue;
+                }
+                $imageNode = $imageNodes->item(0);
                 $href = $imageNode->getAttribute("src");
                 $width = $imageNode->getAttribute('width');
                 $height = $imageNode->getAttribute('height');
