@@ -57,6 +57,7 @@ class filter_elevator extends moodle_text_filter {
 
         preg_match('/<img[^>]+\>/i', $html, $imageTags);
 
+        $matchCount = 0;
         foreach ($imageTags as $image) {
             if (!empty($image) && (boolean)preg_match($this->targetString, $image)) {
 
