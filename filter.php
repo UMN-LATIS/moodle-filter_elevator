@@ -17,7 +17,6 @@
 
 defined('MOODLE_INTERNAL') || die('Invalid access');
 
-global $CFG;
 require_once $CFG->libdir . '/filelib.php';
 require_once $CFG->dirroot . '/repository/elevator/elevatorAPI.php';
 
@@ -97,7 +96,6 @@ class filter_elevator extends moodle_text_filter {
                     $excerpt = $parsedHref["excerptId"];
                 }
 
-                global $CFG;
                 $elevatorURL = get_config('elevator', 'elevatorURL');
                 $apiKey = get_config('elevator', 'apiKey');
                 $apiSecret = get_config('elevator', 'apiSecret');
