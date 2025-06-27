@@ -23,6 +23,7 @@ require_once $CFG->dirroot . '/repository/elevator/elevatorAPI.php';
 class filter_elevator extends moodle_text_filter {
 
     private $targetString;
+    public $elevatorAPI;
     /**
      * Constructor
      * @param object $context
